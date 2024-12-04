@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList } from '@ionic/angular/standalone';
-import { GameService } from '../features/games/game.service';
-import { ScoreboardComponent } from '../features/games/ui/scoreboard/scoreboard.component';
+import { GameService } from '../../../games/services/game.service';
+import { ScoreboardComponent } from '../../../games/ui/scoreboard/scoreboard.component';
 
 @Component({
   selector: 'app-home',

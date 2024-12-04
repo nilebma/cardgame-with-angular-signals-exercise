@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { ScoreboardComponent } from './scoreboard.component';
-import { Game } from '../../game.model';
+import { Game } from '../../models/game.model';
 import { signal } from '@angular/core';
 
 describe('ScoreboardComponent', () => {
@@ -35,7 +35,7 @@ describe('ScoreboardComponent', () => {
     
     const compiled = fixture.nativeElement;
     const scoreElements = compiled.querySelectorAll('.player-score');
-    
+     
     expect(scoreElements.length).toBe(2);
     expect(scoreElements[0].textContent).toContain('10');
     expect(scoreElements[1].textContent).toContain('5');

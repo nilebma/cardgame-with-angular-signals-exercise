@@ -1,7 +1,7 @@
 import { computed, effect, inject, Injectable, Signal } from '@angular/core';
-import { PlayerService } from '../players/player.service';
-import { GameRaw, Game } from './game.model';
-import { DataLoader } from '../../core/abstract/ressource-loader';
+import { PlayerService } from '../../players/services/player.service';
+import { GameRaw, Game } from '../models/game.model';
+import { DataLoader } from '../../../core/abstract/ressource-loader';
 
 @Injectable({
   providedIn: 'root'
