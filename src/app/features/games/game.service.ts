@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, Signal } from '@angular/core';
 import { PlayerService } from '../players/player.service';
-import { GameRaw, Game } from './game';
+import { GameRaw, Game } from './game.model';
 import { DataLoader } from '../../core/abstract/ressource-loader';
 
 @Injectable({
