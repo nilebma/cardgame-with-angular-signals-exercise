@@ -1,7 +1,4 @@
 {
   "name": "batailleGame",
-  "integrations": {
-    "capacitor": {}
-  },
   "type": "angular-standalone"
 }
