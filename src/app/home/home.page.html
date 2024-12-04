@@ -1,8 +1,15 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
+      Résultats
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
+<ion-content>
+  <ion-list>
+    @for (game of gameService.gamesWithPlayerNames(); track game.id) {
+      <app-scoreboard [game]="game" />
+    }
+  </ion-list>
 </ion-content>

@@ -1,0 +1,23 @@
+<ion-item>
+  <div class="scoreboard">
+    <div class="player" [class.winner]="game().scores[0].winner">
+      <div class="player-name">
+        @if(game().scores[0].winner) {
+          <span class="winner-sign">🏆</span>
+        }
+        {{ game().scores[0].playerName }}
+      </div>
+      <div class="player-score">{{ game().scores[0].score }}</div>
+    </div>
+    <div class="vs-sign">vs.</div>
+    <div class="player" [class.winner]="game().scores[1].winner">
+      <div class="player-name">
+        {{ game().scores[1].playerName }}
+        @if(game().scores[1].winner) {
+          <span class="winner-sign">🏆</span>
+        }
+      </div>
+      <div class="player-score">{{ game().scores[1].score }}</div>
+    </div>
+  </div>
+</ion-item>
