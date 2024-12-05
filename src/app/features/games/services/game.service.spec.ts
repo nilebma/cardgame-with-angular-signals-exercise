@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { GameService } from './game.service';
 import { PlayerService } from '../../players/services/player.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '@environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('GameService', () => {
   let service: GameService;
@@ -33,8 +34,12 @@ describe('GameService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [GameService, PlayerService]
+      providers: [
+        GameService,
+        PlayerService,
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     });
 
     service = TestBed.inject(GameService);

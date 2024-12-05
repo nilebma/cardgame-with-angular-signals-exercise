@@ -1,7 +1,8 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PlayerService } from './player.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '@environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('PlayerService', () => {
   let service: PlayerService;
@@ -14,8 +15,11 @@ describe('PlayerService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [PlayerService]
+      providers: [
+        PlayerService,
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     });
 
     service = TestBed.inject(PlayerService);
