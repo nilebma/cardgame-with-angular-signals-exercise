@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, catchError, Observable, of, retry, shareReplay, tap, timer } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
