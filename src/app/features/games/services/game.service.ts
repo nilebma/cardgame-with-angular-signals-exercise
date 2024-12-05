@@ -10,6 +10,12 @@ export class GameService extends DataLoader<GameRaw> {
 
   private playerService = inject(PlayerService);
   protected resourcePath = '/games';
+  public override state = computed(() => {
+    if(this.playerService.state() !== 'loaded' && this.httpRequestState() === 'loaded')
+      return 'loading';
+    else
+      return this.httpRequestState();
+  });
 
   constructor() {
     super();
@@ -17,17 +23,19 @@ export class GameService extends DataLoader<GameRaw> {
   }
 
   gamesWithPlayerNames: Signal<Game[]> = computed(() => {
-    if(this.playerService.state() !== 'loaded')
+
+    if(this.state() !== 'loaded')
       return [];
 
     return this.data().map(game => ({
       ...game,
       scores: game.scores.map(score => ({
-        ...score,
+       ...score,
         winner: score.score === Math.max(...game.scores.map(s => s.score)),
         playerName: this.playerService.playerById()[score.playerId]?.name || ''
       }))
     }))
+
   });
   
   debug = effect(() => {

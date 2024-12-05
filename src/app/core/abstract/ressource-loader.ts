@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable, Signal, signal } from '@angular/core';
+import { computed, inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, catchError, Observable, of, retry, shareReplay, tap, timer } from 'rxjs';
 import { environment } from '@environments/environment';
@@ -16,8 +16,11 @@ export abstract class DataLoader<T> {
   protected apiUrl = environment.apiUrl;
   protected apiKey = environment.apiKey;
 
-  public state = signal<'error' | 'loading' | 'loaded' | 'init'>('init');
-  public loadingError = signal<string | null>(null);
+  public httpRequestState = signal<'error' | 'loading' | 'loaded' | 'init'>('init');
+  public httpRequestError = signal<string | null>(null);
+  
+  public state = computed(() => this.httpRequestState());
+  public error = computed(() => this.httpRequestError());
 
   private data$ = new BehaviorSubject<T[]>([]);
   data: Signal<T[]> = toSignal(this.data$.asObservable(), { initialValue: [] as T[] });
@@ -26,8 +29,8 @@ export abstract class DataLoader<T> {
   }
 
   loadResources() {
-    this.state.set('loading');
-    this.loadingError.set(null);
+    this.httpRequestState.set('loading');
+    this.httpRequestError.set(null);
 
     const url = `${this.apiUrl}${this.resourcePath}`;
     console.log('loading resources from', url, this.resourcePath);
@@ -38,17 +41,17 @@ export abstract class DataLoader<T> {
                 }),
                 withCredentials: true
             }).pipe(
-                tap(() => this.state.set('loaded')),
+                tap(() => this.httpRequestState.set('loaded')),
                 retry({
                     count: this.maxRetries,
                     delay: (error, retryCount) => {
-                    this.state.set('loading');
+                    this.httpRequestState.set('loading');
                     return timer(retryCount * this.delayBetweenRetries);
                     }
                 }),
                 catchError((error) => {
-                    this.state.set('error');
-                    this.loadingError.set(error.message);
+                    this.httpRequestState.set('error');
+                    this.httpRequestError.set(error.message);
                     return of([]);
                 }),
                 shareReplay(1)
