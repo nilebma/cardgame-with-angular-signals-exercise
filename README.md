@@ -1,11 +1,13 @@
-# Angular Card Game - War Game Implementation
+# Angular Card Game - "La Bataille" Implementation
 
-A card game implementation of "La Bataille" (French) built with Angular 18, showcasing advanced usage of Angular Signals for reactive state management.
+A card game implementation of "La Bataille" (French) built with Angular 18, showcasing advanced usage of Angular Signals for reactive state management. 
 
 ## Features
 
-- Classic "La Bataille"  card game implementation for two players
+- Classic "La Bataille" card game implementation for two players
 - List of last played games loaded from REST API
+- Responsive design with Ionic components
+- Support for Dark/Light theme modes
 - Possibility to play a new game
   - Game progression through button clicks
   - Game history and scores tracking
@@ -15,6 +17,7 @@ A card game implementation of "La Bataille" (French) built with Angular 18, show
 ## Technical Stack
 
 - Angular 18
+- Ionic Framework
 - TypeScript 5.4
 - RxJS
 - Angular Signals
