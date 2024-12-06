@@ -270,8 +270,7 @@ export class ActivegamePage {
     this.navCtrl.navigateBack('/home');
   }
 
-  async saveParty() {
-    console.log('saveParty');
+  async saveGame() {
     try {
       await this.gameService.saveGame({ 
           scores: [
@@ -290,7 +289,7 @@ export class ActivegamePage {
       this.goBackToHomePage();
     }
     catch(error) {
-      console.error('saveParty', error);
+      console.error('ActivegamePage | saveGame', error);
       this.displaySavePartyError(error);
     }
   }
