@@ -72,14 +72,10 @@ The project follows a feature-based architecture:
 - Ionic CLI: `npm install -g @ionic/cli`
 
 ### API Server Setup
-1. Clone and setup the test API server:   ```bash
-   git clone https://github.com/sogexia/hiring-frontend-api-server
-   cd hiring-frontend-api-server
-   npm install
-   npm start   ```
+1. Clone and setup the test API server, see:   ```https://github.com/sogexia/hiring-frontend-api-server```
 
 ### Application Setup
-1. Install dependencies:   ```bash
+1. Install dependencies:   ```
    npm install   ```
 
 2. Configure the API connection:
@@ -90,7 +86,7 @@ The project follows a feature-based architecture:
 
    - `proxy.conf.json` for API base URL and port of the API server
 
-3. Start the development server:   ```bash
+3. Start the development server:   ```
    ionic serve   ```
 
 ### Important Notes
