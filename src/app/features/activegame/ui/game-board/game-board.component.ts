@@ -40,13 +40,6 @@ export class GameBoardComponent  {
   /** Player instances */
   firstActivePlayer:ActivePlayer;
   secondActivePlayer:ActivePlayer;
-
-  /** Each round is described by an array of played cards, only completed rounds are saved here */
-  private gamesRounds = signal<Array<[PlayedCard, PlayedCard]>>([]);
-
-  /** The card that has last been played by each player (first player, then second player) 
-      If a card is null, it means that the corresponding player has not played their card in the current round */
-  private currentHand:[number|null, number|null] = [null, null];
   
   // CONSTRUCTOR SECTION
   /** Initializes the active players and deals the card deck */
@@ -84,6 +77,13 @@ export class GameBoardComponent  {
   }
 
   // GAME LOGIC SECTION
+
+  /** Each round is described by an array of played cards, only completed rounds are saved here */
+  private gamesRounds = signal<Array<[PlayedCard, PlayedCard]>>([]);
+
+  /** The card that has last been played by each player (first player, then second player) 
+      If a card is null, it means that the corresponding player has not played their card in the current round */
+  private currentHand:[number|null, number|null] = [null, null];
 
   /**
    * Effect that handles the game logic when cards are played
