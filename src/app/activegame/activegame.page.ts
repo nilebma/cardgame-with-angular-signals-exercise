@@ -162,16 +162,21 @@ export class ActivegamePage {
   // Card deck Logic : Generate the card deck, sorting, and deal it to the players
   dealCard() {
     const cardDeck = this.generateCardDeck();
-    this.firstActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck.slice(0, 3)]);
-    this.secondActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck.slice(3, 6)]);
+    const halfDeckSize = this.deckSize / 2;
+    this.firstActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck.slice(0, halfDeckSize)]);
+    this.secondActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck.slice(halfDeckSize, this.deckSize)]);
   }
 
   generateCardDeck():Array<number> {
     const cardDeck = [];
-    for (let i = 1; i < 7; i++) {
+
+    for (let i = 1; i < this.deckSize + 1; i++) {
       cardDeck.push(i);
     }
+
+    // We shuffle the deck
     cardDeck.sort(() => Math.random() - 0.5);
+    
     return cardDeck;
   }
 
@@ -231,7 +236,8 @@ export class ActivegamePage {
   }, {allowSignalWrites: true});
   
 
-  
+  readonly deckSize:number = 4; // should be even
+
 
   // Game state
   gameState:Signal<GameState> = computed(() => {
