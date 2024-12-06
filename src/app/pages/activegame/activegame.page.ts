@@ -1,4 +1,4 @@
-import { Component, computed, effect, HostListener, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, NavController } from '@ionic/angular/standalone';
@@ -35,35 +35,23 @@ export class ActivegamePage {
   /** Navigation controller service for page navigation */
   private navCtrl = inject(NavController);
 
-  /**
-   * Game state signal
-   * Represents the current state of the game
-   * @type {Signal<GameState | null>}
-   */
+  /** Game state signal: Represents the current state of the game */
   gameState = signal<GameState | null>(null);
 
-  /**
-   * Updates the game state
-   * @param {any} state - The new game state to set
-   */
+  /** Updates the game state */
   setGameState(state:any) {
     console.log("setGameState", state);
     if(state && typeof state === 'string')
       this.gameState.set(state as GameState);
   }
 
-  /**
-   * Effect that triggers navigation to home page when game is saved
-   */
+  /** Effect that triggers navigation to home page when game is saved */
   gobackWhenGameIsSaved = effect(() => {
     if(this.gameState() === 'saved')
       this.goBackToHomePage();
   });
 
-  /**
-   * Navigates back to the home page
-   * @private
-   */
+  /** Navigates back to the home page */
   private goBackToHomePage() {
     this.navCtrl.navigateBack('/home');
   }
@@ -85,7 +73,7 @@ export class ActivegamePage {
 
   /**
    * Displays an exit confirmation dialog
-   * @returns {Promise<any>} Dialog dismissal data
+   * @returns {Promise<any>} Dialog dismissal data, with role 'confirm' if user confirms, 'cancel' otherwise
    */
   async showExitDialog() {
     const alert = await this.alertController.create({
