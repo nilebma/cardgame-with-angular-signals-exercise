@@ -101,7 +101,7 @@ export class GameBoardComponent  {
         if(currentFirstPlayerCard != newFirstPlayerCard)
         {
           // Then we expect the second player to play their card, and we clear their hand
-          this.secondActivePlayer.currentCard.set(null); 
+          this.secondActivePlayer.removeCurrentCardFromHand(); 
           firstPlayerCanPlay = false;
         }
 
@@ -109,7 +109,7 @@ export class GameBoardComponent  {
         if(currentSecondPlayerCard != newSecondPlayerCard)
         {
           // Then we expect the first player to play their card, and we clear their hand
-          this.firstActivePlayer.currentCard.set(null);
+          this.firstActivePlayer.removeCurrentCardFromHand();
           secondPlayerCanPlay = false;
         }
       }
@@ -129,8 +129,8 @@ export class GameBoardComponent  {
 
     firstPlayerCanPlay = firstPlayerCanPlay && this.firstActivePlayer.cardDeck().length > 0;
     secondPlayerCanPlay = secondPlayerCanPlay && this.secondActivePlayer.cardDeck().length > 0;
-    this.firstActivePlayer.canPlay.set(firstPlayerCanPlay);
-    this.secondActivePlayer.canPlay.set(secondPlayerCanPlay);
+    this.firstActivePlayer.updateCanPlayStatus(firstPlayerCanPlay);
+    this.secondActivePlayer.updateCanPlayStatus(secondPlayerCanPlay);
     this.currentHand = [newFirstPlayerCard, newSecondPlayerCard];
     
   }, {allowSignalWrites: true});
