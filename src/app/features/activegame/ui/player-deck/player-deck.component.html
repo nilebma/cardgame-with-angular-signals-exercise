@@ -1,0 +1,24 @@
+<div class="playerName" [class.winner]="player()?.isWinning()">{{player()?.name()}}</div>
+<div class="playerScore">{{player()?.score()}} pts.</div>
+
+<div class="playerCard">
+  <div class="cardValue" [class.winner]="player()?.isWinningRound()">
+    {{player()?.currentCard()}}
+  </div>
+</div>
+
+<div class="playerCard playerLastCard" [class.hidden]="!lastCard()">
+  <div class="cardValue">
+  {{lastCard()}}
+  </div>
+</div>
+
+@if(player()?.canPlay() && gameState() !== "playerSelection")
+{
+  <div class="pickCard">
+    <ion-button (click)="pickCard()">Tirer une carte</ion-button>
+  </div>
+}
+<!-- <div class="playerScore">Score : {{player()?.score()}}</div> -->
+<!-- <div class="playerScore">Score : {{firstPlayerScore()}}</div> -->
+<!-- <div class="playerCard">Carte : {{firstPlayerCard()}}</div> -->

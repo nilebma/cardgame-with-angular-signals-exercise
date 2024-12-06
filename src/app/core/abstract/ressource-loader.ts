@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, catchError, Observable, of, retry, shareReplay, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, Observable, of, retry, shareReplay, tap, timer } from 'rxjs';
 import { environment } from '@environments/environment';
 
 @Injectable({
@@ -57,5 +57,33 @@ export abstract class DataLoader<T> {
                 shareReplay(1)
             ).subscribe(data => this.data$.next(data));
 
+  }
+
+  protected adaptResourceBeforeSave(resource:T):any {
+    return resource;
+  }
+
+  async saveNewResource(resource:T) {
+
+    this.httpRequestState.set('loading');
+    if(this.adaptResourceBeforeSave)
+      resource = this.adaptResourceBeforeSave(resource);
+
+    try {
+      const response = await firstValueFrom(this.http.post<T>(`${this.apiUrl}${this.resourcePath}`, resource, {
+          headers: new HttpHeaders({
+            'Authorization': `${this.apiKey}`,
+            'Content-Type': 'application/json'
+          })
+        }))
+
+      console.log('saveNewResource', response);
+      this.httpRequestState.set('loaded');
+      // this.data$.next([...this.data(), response]);
+      return response;
+    }
+    catch(error) {
+      throw error;
+    }
   }
 }

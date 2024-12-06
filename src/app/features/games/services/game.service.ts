@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, Signal } from '@angular/core';
 import { PlayerService } from '../../players/services/player.service';
-import { GameRaw, Game } from '../models/game.model';
+import { GameRaw, Game, ScoreRaw } from '../models/game.model';
 import { DataLoader } from '../../../core/abstract/ressource-loader';
 
 @Injectable({
@@ -34,11 +34,19 @@ export class GameService extends DataLoader<GameRaw> {
         winner: score.score === Math.max(...game.scores.map(s => s.score)),
         playerName: this.playerService.playerById()[score.playerId]?.name || ''
       }))
-    }))
+    })).reverse();
 
   });
   
   debug = effect(() => {
     console.log("GameService | loaded games", this.gamesWithPlayerNames())
   });
+
+  protected override adaptResourceBeforeSave(resource:GameRaw):Array<ScoreRaw> {
+    return resource.scores || [];
+  }
+
+  async saveGame(game:GameRaw) {
+    return this.saveNewResource(game);
+  }
 }

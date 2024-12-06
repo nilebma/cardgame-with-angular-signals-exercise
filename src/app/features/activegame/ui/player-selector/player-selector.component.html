@@ -1,0 +1,7 @@
+<div class="playerSelector">
+  <ion-select [(ngModel)]="selectedPlayerId" placeholder="Joueur" interface="popover">
+    @for(player of potentialPlayers(); track player.id) {
+      <ion-select-option [value]="player.id">{{player.name}}</ion-select-option>
+    }
+  </ion-select>
+</div>

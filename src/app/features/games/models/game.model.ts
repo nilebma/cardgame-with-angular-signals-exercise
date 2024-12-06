@@ -1,5 +1,5 @@
 export interface GameRaw {
-    id: number;
+    id?: number;
     scores: ScoreRaw[];
   }
   

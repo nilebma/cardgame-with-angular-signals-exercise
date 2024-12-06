@@ -1,0 +1,31 @@
+.playerSpot{
+    width: 300px;
+    margin: 10px;
+    text-align: center;
+
+    app-player-selector {
+      display: inline-block;
+      margin: auto;
+      width: 80px;
+    }
+}
+
+.gameDeck {
+  display: flex;
+  justify-content: space-between;
+  max-width: 600px;
+  margin: auto;
+}
+
+.partyOver {
+  text-align: center;
+  .partyOverMessage {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin: 15px;
+  }
+  .partyOverDetail {
+    font-size: 1.2rem;
+    margin: 15px;
+  }
+}
