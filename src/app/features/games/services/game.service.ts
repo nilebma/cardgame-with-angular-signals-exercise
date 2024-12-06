@@ -10,6 +10,13 @@ export class GameService extends DataLoader<GameRaw> {
 
   private playerService = inject(PlayerService);
   protected resourcePath = '/games';
+
+  constructor() {
+    super();
+    this.loadResources();
+  }
+
+  // we override the loading state as we wait for the players to be loaded
   public override state = computed(() => {
     if(this.playerService.state() !== 'loaded' && this.httpRequestState() === 'loaded')
       return 'loading';
@@ -17,11 +24,7 @@ export class GameService extends DataLoader<GameRaw> {
       return this.httpRequestState();
   });
 
-  constructor() {
-    super();
-    this.loadResources();
-  }
-
+  // we expose the different games by adding the the player names and winning status to the scores
   gamesWithPlayerNames: Signal<Game[]> = computed(() => {
 
     if(this.state() !== 'loaded')
@@ -38,15 +41,17 @@ export class GameService extends DataLoader<GameRaw> {
 
   });
   
-  debug = effect(() => {
-    console.log("GameService | loaded games", this.gamesWithPlayerNames())
-  });
-
-  protected override adaptResourceBeforeSave(resource:GameRaw):Array<ScoreRaw> {
-    return resource.scores || [];
-  }
-
   async saveGame(game:GameRaw) {
     return this.saveNewResource(game);
   }
+  
+  // we adapt the resource before saving it to the database, as api expects an array of scores
+  protected override adaptResourceBeforeSave(resource:GameRaw):Array<ScoreRaw> {
+    return resource?.scores || [];
+  }
+  
+  // debug = effect(() => {
+  //   console.log("GameService | loaded games", this.gamesWithPlayerNames())
+  // });
+
 }
