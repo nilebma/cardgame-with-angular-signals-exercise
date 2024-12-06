@@ -9,6 +9,11 @@ import { PlayerSelectorComponent } from '../player-selector/player-selector.comp
 import { IonButton, AlertController } from '@ionic/angular/standalone';
 import { GameState, PlayedCard } from '../../models/activegame.model';
 
+/**
+ * GameBoardComponent
+ * This component presents the game board, where two players play the game.
+ * It handles the game logic, card deck management, and game state management.
+ */
 @Component({
   selector: 'app-game-board',
   templateUrl: './game-board.component.html',
@@ -22,18 +27,34 @@ import { GameState, PlayedCard } from '../../models/activegame.model';
 })
 export class GameBoardComponent  {
 
+  /** Alert controller service for displaying dialogs */
   private alertController = inject(AlertController);
+
+  /** Player service for player data access */
   playerService = inject(PlayerService);
+
+  /** Game service for game data access */
   gameService = inject(GameService);
 
-  
-  readonly deckSize:number = 4; // should be even
+  /** Size of the card deck (that should be even) */
+  readonly deckSize:number = 4; 
+
+  /** First active player instance */
   firstActivePlayer:ActivePlayer;
+
+  /** Second active player instance */
   secondActivePlayer:ActivePlayer;
 
+  /** Signal holding the array of played card pairs for score calculation */
   private gamesRounds = signal<Array<[PlayedCard, PlayedCard]>>([]);
+
+  /** Current hand of the players */
   private currentHand:[number|null, number|null] = [null, null];
   
+  /**
+   * Constructor
+   * Initializes the active players and deals the card deck
+   */
   constructor() { 
     this.firstActivePlayer = new ActivePlayer(this.gamesRounds);
     this.secondActivePlayer = new ActivePlayer(this.gamesRounds);
@@ -41,19 +62,6 @@ export class GameBoardComponent  {
     this.secondActivePlayer.setOtherActivePlayer(this.firstActivePlayer);
     this.dealCard();
   }
-
-  // Debugging 
-  // private deckEffect = effect(() => {
-  //   console.log('deck', {
-  //     player1Deck: this.firstActivePlayer.cardDeck(),
-  //     player1CurrentCard: this.firstActivePlayer.currentCard(),
-  //     player1CanPlay: this.firstActivePlayer.canPlay(),
-  //     player2Deck: this.secondActivePlayer.cardDeck(),
-  //     player2CurrentCard: this.secondActivePlayer.currentCard(),
-  //     player2CanPlay: this.secondActivePlayer.canPlay()
-  //   });
-  // });
-
   // Card deck Logic : Generate the card deck, sorting, and deal it to the players
  
   dealCard() {
@@ -76,8 +84,8 @@ export class GameBoardComponent  {
     return cardDeck;
   }
 
-  // Game Logic : Here we have all the logic of the game, we handle cards by players, close and open rounds, and we save the round results
 
+  // Game Logic : Here we have all the logic of the game, we handle cards by players, close and open rounds, and we save the round results
   private pickCardEffect = effect(() => {
     let newFirstPlayerCard = this.firstActivePlayer.currentCard();
     let newSecondPlayerCard = this.secondActivePlayer.currentCard();
@@ -86,18 +94,21 @@ export class GameBoardComponent  {
     let firstPlayerCanPlay = true;
     let secondPlayerCanPlay = true;
 
+    // If second player has not played their card yet, then first we just define that the first player can't play
     if(newFirstPlayerCard && !newSecondPlayerCard) {
         firstPlayerCanPlay = false;
     }
+    // If first player has not played their card yet, then we define that the second player can't play
     else if(!newFirstPlayerCard && newSecondPlayerCard) {
         secondPlayerCanPlay = false;
     }
+    // If both players have played their card
     else if(newFirstPlayerCard && newSecondPlayerCard) {
 
       // If both players already had card on the table, then it means that it is a start of a new round
       if(currentFirstPlayerCard && currentSecondPlayerCard)
       {
-        // It means that the first player has started the new round
+        // If the first player has started the new round
         if(currentFirstPlayerCard != newFirstPlayerCard)
         {
           // Then we expect the second player to play their card, and we clear their hand
@@ -105,7 +116,7 @@ export class GameBoardComponent  {
           firstPlayerCanPlay = false;
         }
 
-        // It means that the second player has started the new round
+        // If the second player has started the new round
         if(currentSecondPlayerCard != newSecondPlayerCard)
         {
           // Then we expect the first player to play their card, and we clear their hand
@@ -123,21 +134,29 @@ export class GameBoardComponent  {
             {playerId: this.secondActivePlayer.id()!, card: newSecondPlayerCard}]
           ]);
         }
-        // Note that we don't empty the hands of the players, so they can see the card they played while waiting for the next round
       }
     }
 
+    // Before updating "canplaystatus" for each player, we check if they still have cards in their deck (if not, they can't play for sure)
     firstPlayerCanPlay = firstPlayerCanPlay && this.firstActivePlayer.cardDeck().length > 0;
     secondPlayerCanPlay = secondPlayerCanPlay && this.secondActivePlayer.cardDeck().length > 0;
+
+    // We update the "canplaystatus" for each player
     this.firstActivePlayer.updateCanPlayStatus(firstPlayerCanPlay);
     this.secondActivePlayer.updateCanPlayStatus(secondPlayerCanPlay);
+
+    // We update the current hand copy of the players that we hold in that component to know the last card played
     this.currentHand = [newFirstPlayerCard, newSecondPlayerCard];
     
   }, {allowSignalWrites: true});
   
 
 
-  // Game state
+  // Game state : Here we handle the game state, which can be :
+  // - playerSelection : when the players are not selected
+  // - onGoing : when the game is in progress
+  // - over : when the game is over
+  // - saved : when the game is saved
   gameState:Signal<GameState> = computed(() => {
     if(this.gameSaved())
       return 'saved';
@@ -154,6 +173,7 @@ export class GameBoardComponent  {
     this.gameStateEmitter.emit(this.gameState());
   });
 
+  /** Computed Signal calculating the name of the winner */
   winnerName:Signal<string | null> = computed(() => {
     if(this.firstActivePlayer.isWinning())
       return this.firstActivePlayer.name();
@@ -163,9 +183,13 @@ export class GameBoardComponent  {
       return 'Draw';
   });
 
+  // GAME SAVING SECTION
+  /** Signal indicating if the game is saved */
   private gameSaved = signal(false);
 
-  // Game saving to the database
+  /**
+   * Saves the game to the database
+   */
   async saveGame() {
     try {
       await this.gameService.saveGame({ 
@@ -189,6 +213,11 @@ export class GameBoardComponent  {
     }
   }
 
+
+  /**
+   * Displays an error alert for game saving
+   * @param {any} error - The error object
+   */
   async displaySaveGameError(error:any) {
     const alert = await this.alertController.create({
       header: 'Erreur lors de la sauvegarde de la partie',
@@ -197,6 +226,19 @@ export class GameBoardComponent  {
     });
     await alert.present();
   }
+
+    // Debugging 
+    // private deckEffect = effect(() => {
+    //   console.log('deck', {
+    //     player1Deck: this.firstActivePlayer.cardDeck(),
+    //     player1CurrentCard: this.firstActivePlayer.currentCard(),
+    //     player1CanPlay: this.firstActivePlayer.canPlay(),
+    //     player2Deck: this.secondActivePlayer.cardDeck(),
+    //     player2CurrentCard: this.secondActivePlayer.currentCard(),
+    //     player2CanPlay: this.secondActivePlayer.canPlay()
+    //   });
+    // });
+
 
 
 }
