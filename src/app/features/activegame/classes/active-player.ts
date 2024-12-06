@@ -99,7 +99,10 @@ export class ActivePlayer {
       {
         return this.playerService.data().filter(player => player.id !== (this.otherActivePlayer as ActivePlayer).id());
       }
-      return [];
+      else
+      {
+        return this.playerService.data();
+      }
     });
 
     // ROUND STATUS
