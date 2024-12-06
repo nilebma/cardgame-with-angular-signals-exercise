@@ -39,9 +39,15 @@ export class ActivegamePage {
       this.goBackToHomePage();
   });
 
-  canDeactivate() {
+  async canDeactivate() {
     console.log("canDeactivate", this.gameState());
-    return this.gameState() === 'playerSelection' || this.gameState() === 'saved';
+    if(this.gameState() === 'playerSelection' || this.gameState() === 'saved')
+      return true;
+    else
+    {
+      let result = await this.showExitDialog();
+      return result.role === 'confirm';
+    }
   }
 
   async showExitDialog() {
