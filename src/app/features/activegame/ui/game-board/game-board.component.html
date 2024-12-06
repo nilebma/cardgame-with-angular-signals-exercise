@@ -1,0 +1,48 @@
+<div class="gameDeck">
+  <div class="playerSpot">
+    @if(firstActivePlayer.id() === null)
+    {
+      <div>Choix du premier joueur</div>
+      <app-player-selector (selectedPlayerId)="firstActivePlayer.setPlayerId($event)" 
+                           [potentialPlayers]="firstActivePlayer.potentialPlayers()">
+      </app-player-selector>
+    }
+    @else {
+      <app-player-deck [player]="firstActivePlayer" 
+                       [gameState]="gameState()" 
+                       (onPickCard)="firstActivePlayer.pickCard()">
+      </app-player-deck>
+    }
+  </div>
+  <div class="playerSpot">
+    @if(secondActivePlayer.id() === null) {   
+      <div>Choix du second joueur</div>
+      <app-player-selector (selectedPlayerId)="secondActivePlayer.setPlayerId($event)" 
+                           [potentialPlayers]="secondActivePlayer.potentialPlayers()">
+      </app-player-selector>
+    }
+    @else {
+      <app-player-deck [player]="secondActivePlayer" 
+                       [gameState]="gameState()" 
+                       (onPickCard)="secondActivePlayer.pickCard()">
+      </app-player-deck>
+    }
+  </div>
+</div>
+
+@if(gameState() === 'over') {
+  <div class="partyOver">
+    <div class="partyOverMessage">La partie est terminée</div>
+    @if(winnerName() !== 'Draw') {
+      <div class="partyOverDetail">
+        Elle a été gagnée par le joueur {{winnerName()}}
+      </div>
+    }
+    @else {
+      <div class="partyOverDetail">
+        Les deux joueurs se séparent sur un match nul
+      </div>
+    }
+    <ion-button (click)="saveGame()">Enregistrer la partie</ion-button>
+  </div>
+}
