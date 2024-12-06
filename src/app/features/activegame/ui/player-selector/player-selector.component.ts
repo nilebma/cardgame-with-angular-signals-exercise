@@ -1,4 +1,4 @@
-import { Component, effect, input, model, OnInit, Signal } from '@angular/core';
+import { Component, effect, input, model, OnInit, output, signal, Signal } from '@angular/core';
 import { Player } from 'src/app/features/players/models/player.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,12 +13,17 @@ import { IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 })
 export class PlayerSelectorComponent  implements OnInit {
 
-  selectedPlayerId = model.required(); // specifying the type here is not working (angular bug ?)
+  selectedPlayerIdEmitter = output<number | null>({
+    alias: 'selectedPlayerId'
+  }); 
+
+  selectedPlayerId = signal<number | null>(null);
   potentialPlayers = input.required<Player[]>();
 
-  private selectedPlayerEffect = effect(() => {
-    console.log('potentialPlayers', this.potentialPlayers());
+  private playerIdEmitterEffect = effect(() => {
+    this.selectedPlayerIdEmitter.emit(this.selectedPlayerId());
   });
+
   constructor() { }
 
   ngOnInit() {}

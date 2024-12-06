@@ -21,7 +21,7 @@
       @if(firstActivePlayer.id() === null)
       {
         <div>Choix du premier joueur</div>
-        <app-player-selector [(selectedPlayerId)]="firstActivePlayer.id" 
+        <app-player-selector (selectedPlayerId)="firstActivePlayer.setPlayerId($event)" 
                              [potentialPlayers]="firstActivePlayer.potentialPlayers()">
         </app-player-selector>
       }
@@ -32,7 +32,7 @@
     <div class="playerSpot">
       @if(gameState() === 'playerSelection') {   
         <div>Choix du second joueur</div>
-        <app-player-selector [(selectedPlayerId)]="secondActivePlayer.id" 
+        <app-player-selector (selectedPlayerId)="secondActivePlayer.setPlayerId($event)" 
                              [potentialPlayers]="secondActivePlayer.potentialPlayers()">
         </app-player-selector>
       }

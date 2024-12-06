@@ -2,14 +2,18 @@ import { Component, computed, effect, HostListener, inject, OnInit, Signal, sign
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, NavController } from '@ionic/angular/standalone';
-import { ActivePlayer, Player } from '../features/players/models/player.model';
 import { PlayerService } from '../features/players/services/player.service';
 import { AlertController } from '@ionic/angular';
 import { PlayerDeckComponent } from '../features/activegame/ui/player-deck/player-deck.component';
 import { PlayerSelectorComponent } from '../features/activegame/ui/player-selector/player-selector.component';
 import { GameService } from '../features/games/services/game.service';
+import { ActivePlayer } from '../features/activegame/classes/active-player';
 
 export type GameState = 'onGoing' | 'over' | 'playerSelection' | 'saved';
+export interface PlayedCard {
+  playerId:number;
+  card:number;
+}
 
 @Component({
   selector: 'app-activegame',
@@ -58,94 +62,21 @@ export class ActivegamePage {
     await alert.present();
     return await alert.onDidDismiss();
   }
+  
+  readonly deckSize:number = 4; // should be even
+  firstActivePlayer:ActivePlayer;
+  secondActivePlayer:ActivePlayer;
 
-  // We initialize the players
-
-  firstActivePlayer:ActivePlayer = {
-    id: signal(null), // will be populated by the player selector component
-    name: computed(() => {
-      const playerId = this.firstActivePlayer.id();
-      if(playerId) {
-        return this.playerService.playerById()[playerId]?.name;
-      }
-      return null;
-    }),
-    cardDeck: signal<number[]>([]), // will be populated by the dealCard method
-    score: computed(() => this.gamesRounds().reduce((acc, fight) => 
-      {
-        if(fight[0] > fight[1]) {
-          return acc + 1;
-        }
-        return acc;
-      }, 0)
-    ),
-    potentialPlayers: computed(() => 
-      this.playerService.data().filter(player => player.id !== this.secondActivePlayer.id())
-    ),
-    pickCard: () => { // will be called by the playerDeck component
-      const cardDeck = this.firstActivePlayer.cardDeck();
-      this.firstActivePlayer.currentCard.update((card:number) => cardDeck?.pop() || null);
-      this.firstActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck]);
-    },
-    currentCard: signal(null), // will be updated by the playerDeck component and the pickCard method
-    canPlay: signal(true), // will be updated by the pickCardEffect
-    isWinningRound: computed(() => {
-      if(this.firstActivePlayer.currentCard() && this.secondActivePlayer.currentCard())
-      {
-        return this.firstActivePlayer.currentCard() > this.secondActivePlayer.currentCard();
-      }
-      return false;
-    }),
-    isWinning : computed(() => {
-      if((this.firstActivePlayer.score() ?? 0) > (this.secondActivePlayer.score() || 0))
-        return true;
-      else 
-        return false;
-    })
-  };
-
-  secondActivePlayer:ActivePlayer = {
-    id: signal(null), // will be populated by the player selector component
-    name: computed(() => {
-      const playerId = this.secondActivePlayer.id();
-      if(playerId) {
-        return this.playerService.playerById()[playerId]?.name;
-      }
-      return null;
-    }),
-    cardDeck: signal<number[]>([]), // will be populated by the dealCard method
-    score: computed(() => this.gamesRounds().reduce((acc, fight) => 
-      {
-        if(fight[0] < fight[1]) {
-          return acc + 1;
-        }
-        return acc;
-      }, 0)
-    ),
-    potentialPlayers: computed(() => 
-      this.playerService.data().filter(player => player.id !== this.firstActivePlayer.id())
-    ),
-    pickCard: () => { // will be called by the playerDeck component
-      const cardDeck = this.secondActivePlayer.cardDeck();
-      this.secondActivePlayer.currentCard.update((card:number) => cardDeck?.pop() || null);
-      this.secondActivePlayer.cardDeck.update((deck:number[]) => [...deck]);
-    },
-    currentCard: signal(null), // will be updated by the playerDeck component and the pickCard method
-    canPlay: signal(true),
-    isWinningRound: computed(() => {
-      if(this.firstActivePlayer.currentCard() && this.secondActivePlayer.currentCard())
-      {
-        return this.firstActivePlayer.currentCard() < this.secondActivePlayer.currentCard();
-      }
-      return false;
-    }),
-    isWinning : computed(() => {
-      if((this.secondActivePlayer.score() ?? 0) > (this.firstActivePlayer.score() || 0))
-        return true;
-      else 
-        return false;
-    })
-  };
+  private gamesRounds = signal<Array<[PlayedCard, PlayedCard]>>([]);
+  private currentHand:[number|null, number|null] = [null, null];
+  
+  constructor() { 
+    this.firstActivePlayer = new ActivePlayer(this.gamesRounds);
+    this.secondActivePlayer = new ActivePlayer(this.gamesRounds);
+    this.firstActivePlayer.setOtherActivePlayer(this.secondActivePlayer);
+    this.secondActivePlayer.setOtherActivePlayer(this.firstActivePlayer);
+    this.dealCard();
+  }
 
   // Debugging 
   // private deckEffect = effect(() => {
@@ -160,11 +91,12 @@ export class ActivegamePage {
   // });
 
   // Card deck Logic : Generate the card deck, sorting, and deal it to the players
+ 
   dealCard() {
     const cardDeck = this.generateCardDeck();
     const halfDeckSize = this.deckSize / 2;
-    this.firstActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck.slice(0, halfDeckSize)]);
-    this.secondActivePlayer.cardDeck.update((deck:number[]) => [...cardDeck.slice(halfDeckSize, this.deckSize)]);
+    this.firstActivePlayer.setCardDeck(cardDeck.slice(0, halfDeckSize));
+    this.secondActivePlayer.setCardDeck(cardDeck.slice(halfDeckSize, this.deckSize));
   }
 
   generateCardDeck():Array<number> {
@@ -181,8 +113,6 @@ export class ActivegamePage {
   }
 
   // Game Logic : Here we have all the logic of the game, we handle cards by players, close and open rounds, and we save the round results
-  private gamesRounds = signal<Array<[number, number]>>([]);
-  private currentHand:[number|null, number|null] = [null, null];
 
   private pickCardEffect = effect(() => {
     let newFirstPlayerCard = this.firstActivePlayer.currentCard();
@@ -222,7 +152,13 @@ export class ActivegamePage {
       // ELSE it means that the round just got completed, and we can save its result
       else
       {
-        this.gamesRounds.update(cardFights => [...cardFights, [newFirstPlayerCard, newSecondPlayerCard]]);
+        if(this.firstActivePlayer.id() && this.secondActivePlayer.id())
+        {
+          this.gamesRounds.update(cardFights => [...cardFights, [
+            {playerId: this.firstActivePlayer.id()!, card: newFirstPlayerCard}, 
+            {playerId: this.secondActivePlayer.id()!, card: newSecondPlayerCard}]
+          ]);
+        }
         // Note that we don't empty the hands of the players, so they can see the card they played while waiting for the next round
       }
     }
@@ -235,8 +171,6 @@ export class ActivegamePage {
     
   }, {allowSignalWrites: true});
   
-
-  readonly deckSize:number = 4; // should be even
 
 
   // Game state
@@ -260,16 +194,13 @@ export class ActivegamePage {
       return 'Draw';
   });
 
-  constructor() { 
-    this.dealCard();
-  }
-
   private gameSaved = signal(false);
 
   private goBackToHomePage() {
     this.navCtrl.navigateBack('/home');
   }
 
+  // Game saving to the database
   async saveGame() {
     try {
       await this.gameService.saveGame({ 
@@ -290,11 +221,11 @@ export class ActivegamePage {
     }
     catch(error) {
       console.error('ActivegamePage | saveGame', error);
-      this.displaySavePartyError(error);
+      this.displaySaveGameError(error);
     }
   }
 
-  async displaySavePartyError(error:any) {
+  async displaySaveGameError(error:any) {
     const alert = await this.alertController.create({
       header: 'Erreur lors de la sauvegarde de la partie',
       message: error.message,
