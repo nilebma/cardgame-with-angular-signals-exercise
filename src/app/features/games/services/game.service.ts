@@ -37,7 +37,7 @@ export class GameService extends DataLoader<GameRaw> {
         winner: score.score === Math.max(...game.scores.map(s => s.score)),
         playerName: this.playerService.playerById()[score.playerId]?.name || ''
       }))
-    })).reverse();
+    })).reverse(); // we reverse the order so that the most recent game is at the top
 
   });
   

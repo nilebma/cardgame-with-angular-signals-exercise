@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivegamePage } from './activegame.page';
-import { GameService } from '../features/games/services/game.service';
-import { PlayerService } from '../features/players/services/player.service';
+import { GameService } from '../../features/games/services/game.service';
+import { PlayerService } from '../../features/players/services/player.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ActivegamePage', () => {

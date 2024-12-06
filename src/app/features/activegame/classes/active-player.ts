@@ -1,6 +1,6 @@
 import { computed, effect, inject, signal, Signal } from "@angular/core";
 import { PlayerService } from "../../players/services/player.service";
-import { PlayedCard } from "src/app/activegame/activegame.page";
+import { PlayedCard } from "../../../pages/activegame/activegame.page";
 
 // TODO : some properties are defined as signals, and can be updated outside of the class. 
 //        This is not a good practice and they should be exposed as readonly Observables instead.

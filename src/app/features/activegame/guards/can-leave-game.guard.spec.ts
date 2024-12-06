@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { CanDeactivateFn } from '@angular/router';
 
 import { canLeaveGameGuard } from './can-leave-game.guard';
-import { ActivegamePage } from 'src/app/activegame/activegame.page';
+import { ActivegamePage } from '../../../pages/activegame/activegame.page';
 
 describe('canLeaveGameGuard', () => {
   const executeGuard: CanDeactivateFn<ActivegamePage> = (...guardParameters) => 

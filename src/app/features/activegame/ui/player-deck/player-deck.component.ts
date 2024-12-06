@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, model, OnInit, output, signal, Signal } from '@angular/core';
-import { GameState } from 'src/app/activegame/activegame.page';
+import { Component, computed, input,OnInit, output } from '@angular/core';
+import { GameState } from '../../../../pages/activegame/activegame.page';
 import { IonButton } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { ActivePlayer } from '../../classes/active-player';

@@ -2,12 +2,12 @@ import { Component, computed, effect, HostListener, inject, OnInit, Signal, sign
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, NavController } from '@ionic/angular/standalone';
-import { PlayerService } from '../features/players/services/player.service';
 import { AlertController } from '@ionic/angular';
-import { PlayerDeckComponent } from '../features/activegame/ui/player-deck/player-deck.component';
-import { PlayerSelectorComponent } from '../features/activegame/ui/player-selector/player-selector.component';
-import { GameService } from '../features/games/services/game.service';
-import { ActivePlayer } from '../features/activegame/classes/active-player';
+import { PlayerDeckComponent } from '../../features/activegame/ui/player-deck/player-deck.component';
+import { PlayerSelectorComponent } from '../../features/activegame/ui/player-selector/player-selector.component';
+import { GameService } from '../../features/games/services/game.service';
+import { ActivePlayer } from '../../features/activegame/classes/active-player';
+import { PlayerService } from '../../features/players/services/player.service';
 
 export type GameState = 'onGoing' | 'over' | 'playerSelection' | 'saved';
 export interface PlayedCard {

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonButton, IonIcon, IonButtons, NavController, IonProgressBar } from '@ionic/angular/standalone';
-import { GameService } from '../../../games/services/game.service';
-import { ScoreboardComponent } from '../../../games/ui/scoreboard/scoreboard.component';
+import { GameService } from '../../features/games/services/game.service';
+import { ScoreboardComponent } from '../../features/games/ui/scoreboard/scoreboard.component';
 import { iosTransitionAnimation } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircle } from 'ionicons/icons';
