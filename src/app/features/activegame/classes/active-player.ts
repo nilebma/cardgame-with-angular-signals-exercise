@@ -3,56 +3,119 @@ import { PlayerService } from "../../players/services/player.service";
 import { PlayedCard } from "../models/activegame.model";
 import { Player } from "../../players/models/player.model";
 
-// This class represents the current active player, and it is used
-// - to handle the data and logic of the player during a gmes (deck, card, can play status, score etc.)
-// - to hold and calculate some handy data like player name, score, etc.
+/**
+ * Represents an active player in the game.
+ * This class is responsible for:
+ * - Managing player data and logic during a game (deck, card, play status, score etc.)
+ * - Holding and calculating useful data like player name, score, etc.
+ */
 export class ActivePlayer {
-    private playerService = inject(PlayerService);
-    // the other active player, that is used to calculate the score amngst other things
-    private otherActivePlayer:ActivePlayer | null = null;
 
+    // PLAYER SERVICE
+    /** @private The player service injected for player data access */
+    private playerService = inject(PlayerService);
+
+
+    // CONSTRUCTOR
+    // we inject the games rounds signal, that will be used to calculate the score
+    /**
+     * Creates an instance of ActivePlayer
+     * @param gamesRounds - Signal containing the array of played card pairs for score calculation
+     */
     constructor(public gamesRounds:Signal<Array<[PlayedCard, PlayedCard]>>) 
     {
     }
-    
-    // the player id, that does not have to be set from start
-    private _id =  signal<number | null>(null);
+
+
+    // PLAYER ID
+    // represents the unique identifier of the player that can be null at start
+
+    /** @private Signal holding the player's ID */
+    private _id = signal<number | null>(null);
+
+    /** @readonly The player's ID as a readonly signal */
     public readonly id = this._id.asReadonly();
-    // we set the player id
+
+    /**
+     * Sets the player's ID after type validation
+     * @param id - The ID to set for the player
+     */
     public setPlayerId(id:any) {
       if(typeof id === 'number' || id === null)
         this._id.set(id);
     }
 
+
+    // OTHER PLAYER REFERENCE
+    // sets the reference to the other player for score calculations
+
+    /** @private The other active player reference */
+    private otherActivePlayer:ActivePlayer | null = null;
+
+    /**
+     * Sets the other active player reference
+     * @param otherActivePlayer - The other player instance
+     */
+    public setOtherActivePlayer(otherActivePlayer:ActivePlayer) 
+    {
+        this.otherActivePlayer = otherActivePlayer;
+    }
+
+
     // CARD DECK
     // represents the deck of cards that the player has
-    private _cardDeck = signal<number[]>([]); // the value is set in the setCardDeck method, called by the game board
+
+    /** @private Signal containing the player's card deck */
+    private _cardDeck = signal<number[]>([]);
+
+    /** @readonly The player's card deck as a readonly signal */
     public readonly cardDeck = this._cardDeck.asReadonly();
-    // we distribute the cards to the player
+
+    /**
+     * Sets the player's card deck
+     * @param cardDeck - Array of cards to assign to the player
+     */
     public setCardDeck(cardDeck:number[]) {
         this._cardDeck.set(cardDeck);
     }
   
+
     // CURRENT CARD
     // represents the card that the player has picked for the current round
-    private _currentCard = signal<number | null>(null); // the value is set in the pickCard method or via the removeCurrentCardFromHand method
+
+    /** @private Signal for the currently selected card */
+    private _currentCard = signal<number | null>(null);
+
+    /** @readonly The current card as a readonly signal */
     public readonly currentCard = this._currentCard.asReadonly();
-    // we remove the current card from the player hand, as a round is completed
+
+    /** Removes the current card from player's hand after round completion */
     public removeCurrentCardFromHand() {
       this._currentCard.set(null);
     }
 
+
     // CAN PLAY
     // define if the player can play a card in the current round
-    private _canPlay = signal<boolean>(true); // the value is set in the updateCanPlayStatus method, called by the game board
+
+    /** @private Signal indicating if the player can play */
+    private _canPlay = signal<boolean>(true);
+
+    /** @readonly The player's ability to play as a readonly signal */
     public readonly canPlay = this._canPlay.asReadonly();
-    // we update the player can play status
+
+    /**
+     * Updates the player's ability to play
+     * @param canPlay - Boolean indicating if the player can play
+     */
     public updateCanPlayStatus(canPlay:boolean) {
       this._canPlay.set(canPlay);
     }
 
+
     // PLAYER NAME
-    // we get the name of the current player, by looking it up in the player service
+    // gets the name of the current player by looking it up in the player service
+    /** @readonly Computed signal that returns the player's name */
     public readonly name = computed<string | null>(() => {
       const playerId = this.id();
       if(playerId) {
@@ -61,7 +124,9 @@ export class ActivePlayer {
       return null;
     });
 
-    // we calculate the score of the current player, by summing up the number of rounds won
+    // PLAYER SCORE
+    // calculates the score of the current player by counting won rounds
+    /** @readonly Computed signal that returns the player's current score */
     public readonly score = computed<number>(() => this.gamesRounds().reduce((acc, fight) => 
       {
         const activePlayerCard = fight.find(card => card.playerId === this.id());
@@ -73,7 +138,9 @@ export class ActivePlayer {
       }, 0)
     );
 
-    // we get the potential players that the user can choose from, if the player is not already set up
+    // POTENTIAL PLAYERS
+    // gets the list of players that can be selected, excluding the other active player
+    /** @readonly Computed signal that returns available players for selection */
     public readonly potentialPlayers = computed<Player[]>(() => {
       if(this.otherActivePlayer) 
       {
@@ -82,7 +149,9 @@ export class ActivePlayer {
       return [];
     });
 
-    // we determine if the current player is winning the current  round, and expose it as a signal
+    // ROUND STATUS
+    // determines if the current player is winning the current round
+    /** @readonly Computed signal indicating if player is winning the current round */
     public readonly isWinningRound = computed<boolean>(() => {
       // it is important to check if both players have a card on the table (otherwise no winner)
       if(this.currentCard() && this.otherActivePlayer?.currentCard())
@@ -92,7 +161,9 @@ export class ActivePlayer {
       return false;
     });
 
-    // we determine if the current player is winning the game, and expose it as a signal
+    // GAME STATUS
+    // determines if the current player is winning the overall game
+    /** @readonly Computed signal indicating if player is winning the game */
     public readonly isWinning = computed<boolean>(() => {
       if((this.score() ?? 0) > (this.otherActivePlayer?.score() || 0))
         return true;
@@ -100,12 +171,9 @@ export class ActivePlayer {
         return false;
     })
 
-    // we set the other active player, so current player can calculate its score
-    public setOtherActivePlayer(otherActivePlayer:ActivePlayer) {
-      this.otherActivePlayer = otherActivePlayer;
-    }
-
-    // we ask the player to pick a card and update its current card
+    // CARD PICKING
+    // handles the logic for picking a card from the deck
+    /** Picks a card from the deck and updates the current card and deck state */
     public pickCard = () => {
       const cardDeck = this.cardDeck();
       this._currentCard.update((card:number | null) => cardDeck?.pop() || null);
