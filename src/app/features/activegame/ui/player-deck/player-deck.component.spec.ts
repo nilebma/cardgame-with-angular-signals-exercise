@@ -9,12 +9,13 @@ describe('PlayerDeckComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PlayerDeckComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PlayerDeckComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('player', null);
+    fixture.componentRef.setInput('gameState', 'playerSelection'); 
     fixture.detectChanges();
   }));
 

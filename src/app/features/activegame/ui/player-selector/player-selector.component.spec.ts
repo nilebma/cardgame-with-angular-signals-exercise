@@ -9,12 +9,12 @@ describe('PlayerSelectorComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PlayerSelectorComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PlayerSelectorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('potentialPlayers', []);
     fixture.detectChanges();
   }));
 

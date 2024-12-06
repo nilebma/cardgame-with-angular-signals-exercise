@@ -67,17 +67,18 @@ describe('GameService', () => {
     const req = httpMock.expectOne(`${environment.apiUrl}/games`);
     req.flush(mockGames);
 
+    // this will reverse the order of the games
     const gamesWithNames = service.gamesWithPlayerNames();
     
     expect(gamesWithNames[0].scores[0].playerName).toBe('Player 1');
     expect(gamesWithNames[0].scores[1].playerName).toBe('Player 2');
-    expect(gamesWithNames[0].scores[0].winner).toBeTrue();
-    expect(gamesWithNames[0].scores[1].winner).toBeFalse();
+    expect(gamesWithNames[0].scores[0].winner).toBeFalse();
+    expect(gamesWithNames[0].scores[1].winner).toBeTrue();
 
     expect(gamesWithNames[1].scores[0].playerName).toBe('Player 1');
     expect(gamesWithNames[1].scores[1].playerName).toBe('Player 2');
-    expect(gamesWithNames[1].scores[0].winner).toBeFalse();
-    expect(gamesWithNames[1].scores[1].winner).toBeTrue();
+    expect(gamesWithNames[1].scores[0].winner).toBeTrue();
+    expect(gamesWithNames[1].scores[1].winner).toBeFalse();
   });
 
   it('should handle http error', () => {
