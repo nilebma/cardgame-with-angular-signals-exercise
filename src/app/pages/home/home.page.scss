@@ -1,4 +1,16 @@
 .new-game-button {
   --color: white;
   --padding-start: 6px;
+
+  .new-game-button-text {
+   display: inline-block;
+  }
+
+  //if the screen is small, we hide the text of the button
+  @media (max-width: 480px) {
+    .new-game-button-text {
+      display: none;
+    }
+  }
 }
+
