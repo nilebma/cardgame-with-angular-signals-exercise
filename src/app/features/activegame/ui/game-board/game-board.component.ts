@@ -45,7 +45,7 @@ export class GameBoardComponent  {
    * @readonly
    * @type {number}
    */
-  readonly deckSize:number = 4; 
+  readonly deckSize:number = 52; 
 
   /** 
    * First active player instance
