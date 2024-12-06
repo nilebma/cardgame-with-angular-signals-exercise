@@ -26,18 +26,24 @@
         </app-player-selector>
       }
       @else {
-        <app-player-deck [player]="firstActivePlayer" [gameState]="gameState()" (onPickCard)="firstActivePlayer.pickCard()"></app-player-deck>
+        <app-player-deck [player]="firstActivePlayer" 
+                         [gameState]="gameState()" 
+                         (onPickCard)="firstActivePlayer.pickCard()">
+        </app-player-deck>
       }
     </div>
     <div class="playerSpot">
-      @if(gameState() === 'playerSelection') {   
+      @if(secondActivePlayer.id() === null) {   
         <div>Choix du second joueur</div>
         <app-player-selector (selectedPlayerId)="secondActivePlayer.setPlayerId($event)" 
                              [potentialPlayers]="secondActivePlayer.potentialPlayers()">
         </app-player-selector>
       }
       @else {
-        <app-player-deck [player]="secondActivePlayer" [gameState]="gameState()" (onPickCard)="secondActivePlayer.pickCard()"></app-player-deck>
+        <app-player-deck [player]="secondActivePlayer" 
+                         [gameState]="gameState()" 
+                         (onPickCard)="secondActivePlayer.pickCard()">
+        </app-player-deck>
       }
     </div>
   </div>
