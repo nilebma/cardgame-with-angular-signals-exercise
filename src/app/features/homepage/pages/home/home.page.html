@@ -1,8 +1,14 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-title>
       Résultats
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToActiveGame()" fill="solid" class="new-game-button">
+        &nbsp; Nouvelle Partie &nbsp; 
+        <ion-icon name="add-circle" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     @if (gameService.state() === 'loading') {
       <ion-progress-bar type="indeterminate"></ion-progress-bar>
     }
