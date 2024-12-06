@@ -1,6 +1,6 @@
 import { computed, effect, Injectable } from '@angular/core';
 import { Player } from '../models/player.model';
-import { DataLoader } from '../../../core/abstract/ressource-loader';
+import { DataLoader } from '../../../core/abstract/data-loader';
 @Injectable({
   providedIn: 'root'
 })
