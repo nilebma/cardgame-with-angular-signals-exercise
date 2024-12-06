@@ -13,6 +13,7 @@ import { GameState, PlayedCard } from '../../models/activegame.model';
  * GameBoardComponent
  * This component presents the game board, where two players play the game.
  * It handles the game logic, card deck management, and game state management.
+ * @class
  */
 @Component({
   selector: 'app-game-board',
@@ -27,7 +28,10 @@ import { GameState, PlayedCard } from '../../models/activegame.model';
 })
 export class GameBoardComponent  {
 
-  /** Alert controller service for displaying dialogs */
+  /** 
+   * Alert controller service for displaying dialogs 
+   * @private
+   */
   private alertController = inject(AlertController);
 
   /** Player service for player data access */
@@ -36,19 +40,37 @@ export class GameBoardComponent  {
   /** Game service for game data access */
   gameService = inject(GameService);
 
-  /** Size of the card deck (that should be even) */
+  /** 
+   * Size of the card deck (that should be even)
+   * @readonly
+   * @type {number}
+   */
   readonly deckSize:number = 4; 
 
-  /** First active player instance */
+  /** 
+   * First active player instance
+   * @type {ActivePlayer}
+   */
   firstActivePlayer:ActivePlayer;
 
-  /** Second active player instance */
+  /** 
+   * Second active player instance
+   * @type {ActivePlayer}
+   */
   secondActivePlayer:ActivePlayer;
 
-  /** Signal holding the array of played card pairs for score calculation */
+  /** 
+   * Signal holding the array of played card pairs for score calculation
+   * @private
+   * @type {Signal<Array<[PlayedCard, PlayedCard]>>}
+   */
   private gamesRounds = signal<Array<[PlayedCard, PlayedCard]>>([]);
 
-  /** Current hand of the players */
+  /** 
+   * Current hand of the players
+   * @private
+   * @type {[number|null, number|null]}
+   */
   private currentHand:[number|null, number|null] = [null, null];
   
   /**
@@ -64,6 +86,10 @@ export class GameBoardComponent  {
   }
   // Card deck Logic : Generate the card deck, sorting, and deal it to the players
  
+  /**
+   * Deals cards to both players by splitting the generated deck
+   * @returns {void}
+   */
   dealCard() {
     const cardDeck = this.generateCardDeck();
     const halfDeckSize = this.deckSize / 2;
@@ -71,6 +97,10 @@ export class GameBoardComponent  {
     this.secondActivePlayer.setCardDeck(cardDeck.slice(halfDeckSize, this.deckSize));
   }
 
+  /**
+   * Generates and shuffles a new card deck
+   * @returns {Array<number>} Shuffled array of card numbers
+   */
   generateCardDeck():Array<number> {
     const cardDeck = [];
 
@@ -86,6 +116,11 @@ export class GameBoardComponent  {
 
 
   // Game Logic : Here we have all the logic of the game, we handle cards by players, close and open rounds, and we save the round results
+  /**
+   * Effect that handles the game logic when cards are played
+   * Manages turn order, card playing permissions, and round completion
+   * @private
+   */
   private pickCardEffect = effect(() => {
     let newFirstPlayerCard = this.firstActivePlayer.currentCard();
     let newSecondPlayerCard = this.secondActivePlayer.currentCard();
@@ -157,6 +192,10 @@ export class GameBoardComponent  {
   // - onGoing : when the game is in progress
   // - over : when the game is over
   // - saved : when the game is saved
+  /**
+   * Computed signal that determines the current game state
+   * @type {Signal<GameState>}
+   */
   gameState:Signal<GameState> = computed(() => {
     if(this.gameSaved())
       return 'saved';
@@ -168,12 +207,23 @@ export class GameBoardComponent  {
       return 'playerSelection';
   });
 
+  /**
+   * Event emitter for game state changes
+   * @type {OutputEmitterRef<GameState>}
+   */
   gameStateEmitter = output<GameState>({ alias: 'gameState' });
+
+  /**
+   * Effect that emits game state changes
+   */
   gameStateEmitterEffect = effect(() => {
     this.gameStateEmitter.emit(this.gameState());
   });
 
-  /** Computed Signal calculating the name of the winner */
+  /** 
+   * Computed Signal calculating the name of the winner
+   * @type {Signal<string | null>}
+   */
   winnerName:Signal<string | null> = computed(() => {
     if(this.firstActivePlayer.isWinning())
       return this.firstActivePlayer.name();
@@ -184,11 +234,18 @@ export class GameBoardComponent  {
   });
 
   // GAME SAVING SECTION
-  /** Signal indicating if the game is saved */
+  /** 
+   * Signal indicating if the game is saved
+   * @private
+   * @type {Signal<boolean>}
+   */
   private gameSaved = signal(false);
 
   /**
    * Saves the game to the database
+   * @async
+   * @throws {Error} When saving fails
+   * @returns {Promise<void>}
    */
   async saveGame() {
     try {
@@ -216,7 +273,9 @@ export class GameBoardComponent  {
 
   /**
    * Displays an error alert for game saving
-   * @param {any} error - The error object
+   * @async
+   * @param {any} error - The error object to display
+   * @returns {Promise<void>}
    */
   async displaySaveGameError(error:any) {
     const alert = await this.alertController.create({
