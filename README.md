@@ -114,7 +114,5 @@ The project includes some unit tests for core services. Run tests with: `ng test
 
 Currently implemented tests cover:
 - Data loading services
-- Player management
-- Game state management
 
 Note: End-to-end tests are not implemented yet. Unit tests are far from being exhaustive and could be completed with more time.
