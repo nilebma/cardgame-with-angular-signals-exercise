@@ -86,8 +86,6 @@ export abstract class DataLoader<T> {
                     this.httpRequestError.set(error.message);
                     return of([]);
                 }),
-                // Cache the last result
-                shareReplay(1)
             ).subscribe(data => this.data$.next(data));
   }
 
