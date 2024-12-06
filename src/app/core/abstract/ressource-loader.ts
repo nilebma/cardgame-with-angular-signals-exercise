@@ -8,26 +8,33 @@ import { environment } from '@environments/environment';
   providedIn: 'root'
 })
 export abstract class DataLoader<T> {
-  protected abstract resourcePath: string; // abstract property must be implemented by the subclasses
   protected http = inject(HttpClient);
-  protected maxRetries = 3;
-  protected delayBetweenRetries = 1000;
-
+  
+  // api settings
   protected apiUrl = environment.apiUrl;
   protected apiKey = environment.apiKey;
+  protected abstract resourcePath: string; // abstract property to be implemented by the subclasses
 
+  // retry settings
+  protected maxRetries = 3; 
+  protected delayBetweenRetries = 1000;
+
+  // communicate loading state
   public httpRequestState = signal<'error' | 'loading' | 'loaded' | 'init'>('init');
   public httpRequestError = signal<string | null>(null);
-  
-  public state = computed(() => this.httpRequestState());
-  public error = computed(() => this.httpRequestError());
+  public state = computed(() => this.httpRequestState()); // to be overridden by subclasses, otherwise it will return the httpRequestState
+  public error = computed(() => this.httpRequestError()); // to be overridden by subclasses, otherwise it will return the httpRequestError
 
+  // the data, accessible as a signal
   private data$ = new BehaviorSubject<T[]>([]);
   data: Signal<T[]> = toSignal(this.data$.asObservable(), { initialValue: [] as T[] });
 
-  constructor() {
+  // to be overridden by subclasses, if needed, in order to adapt the resource before saving it
+  protected adaptResourceBeforeSave(resource:T):any {
+    return resource;
   }
 
+  // load the resources from the api
   loadResources() {
     this.httpRequestState.set('loading');
     this.httpRequestError.set(null);
@@ -59,17 +66,15 @@ export abstract class DataLoader<T> {
 
   }
 
-  protected adaptResourceBeforeSave(resource:T):any {
-    return resource;
-  }
-
+  // save a new resource to the api
   async saveNewResource(resource:T) {
 
-    this.httpRequestState.set('loading');
+    // potentially adapt the resource before saving it
     if(this.adaptResourceBeforeSave)
       resource = this.adaptResourceBeforeSave(resource);
 
     try {
+      // save the resource to the api
       const response = await firstValueFrom(this.http.post<T>(`${this.apiUrl}${this.resourcePath}`, resource, {
           headers: new HttpHeaders({
             'Authorization': `${this.apiKey}`,
@@ -77,9 +82,8 @@ export abstract class DataLoader<T> {
           })
         }))
 
-      console.log('saveNewResource', response);
-      this.httpRequestState.set('loaded');
-      // this.data$.next([...this.data(), response]);
+      // the api returns the saved resource with an id, we update the data
+      this.data$.next([...this.data(), response]);
       return response;
     }
     catch(error) {
