@@ -17,10 +17,9 @@ A card game implementation of "La Bataille" (French) built with Angular 18, show
 ## Technical Stack
 
 - Angular 18
-- Ionic Framework
+  - (Taking advantage of Signals)
+- Ionic Framework 8
 - TypeScript 5.4
-- RxJS
-- Angular Signals
 - Jasmine/Karma for testing
 
 ## Game Rules
@@ -67,8 +66,8 @@ The project follows a feature-based architecture:
 ## Installation & Setup
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
+- Node.js
+- npm
 - Ionic CLI: `npm install -g @ionic/cli`
 
 ### API Server Setup
