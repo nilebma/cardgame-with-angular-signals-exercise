@@ -45,14 +45,9 @@
   @if(gameState() === 'over') {
     <div class="partyOver">
       <div class="partyOverMessage">La partie est terminée</div>
-      @if(firstActivePlayer.isWinning()) {
+      @if(winnerName() !== 'Draw') {
         <div class="partyOverDetail">
-          Elle a été gagnée par le joueur {{firstActivePlayer.name()}}
-        </div>
-      }
-      @else if(secondActivePlayer.isWinning()) {
-        <div class="partyOverDetail">
-          Elle a été gagnée par le joueur {{secondActivePlayer.name()}}
+          Elle a été gagnée par le joueur {{winnerName()}}
         </div>
       }
       @else {
