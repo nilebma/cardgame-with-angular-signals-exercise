@@ -1,4 +1,4 @@
-import { PlayedCard } from '../../../pages/activegame/activegame.page';
+import { PlayedCard } from '../models/activegame.model';
 import { ActivePlayer } from './active-player';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';

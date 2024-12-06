@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { GameBoardComponent } from './game-board.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('GameBoardComponent', () => {
   let component: GameBoardComponent;
@@ -9,8 +10,7 @@ describe('GameBoardComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GameBoardComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [HttpClientTestingModule, IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(GameBoardComponent);
